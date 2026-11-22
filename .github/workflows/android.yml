@@ -115,3 +115,43 @@ jobs:
         with:
           name: device-test-reports
           path: app/build/reports/androidTests/
+
+  publish:
+    name: Publish APK (release + apk branch)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: iktishafat-teleprompter-apk
+          path: apk
+
+      - name: Collect APK
+        run: |
+          mkdir -p out
+          cp "$(find apk -name 'app-debug.apk' | head -1)" out/IktishafatTeleprompter-debug.apk
+          ls -la out
+
+      - name: Publish as GitHub release (download directly on the tablet)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-debug
+          name: IKTISHAFAT Teleprompter – latest debug build
+          prerelease: true
+          make_latest: true
+          files: out/IktishafatTeleprompter-debug.apk
+          body: |
+            Debug build of branch ${{ github.ref_name }} at ${{ github.sha }}.
+            Install: open this page on the tablet, download the APK, allow "Install unknown apps".
+
+      - name: Push APK to the apk branch
+        run: |
+          cd out
+          git init -q
+          git checkout -q -b apk
+          git add IktishafatTeleprompter-debug.apk
+          git -c user.name="github-actions" -c user.email="github-actions@users.noreply.github.com" commit -q -m "APK for ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" apk
