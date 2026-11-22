@@ -85,6 +85,17 @@
     <string name="voice_start_speaking">Fang an zu sprechen — der Prompter folgt</string>
     <string name="voice_paused">Pause — warte auf deine Stimme</string>
     <string name="voice_listening">Folgt deiner Stimme · %1$d Wörter/Min</string>
+    <string name="choose_camera">Kamera wählen</string>
+    <string name="camera_searching">Suche nach Kameras…</string>
+    <string name="camera_none_found">Keine Kamera gefunden. Schließe eine Kamera oder Capture-Karte an, sie erscheint hier automatisch.</string>
+    <string name="camera_front">Frontkamera des Tablets</string>
+    <string name="camera_back">Rückkamera des Tablets</string>
+    <string name="camera_builtin_desc">Eingebaute Kamera</string>
+    <string name="camera_external">Externe USB-Kamera</string>
+    <string name="camera_external_desc">Externe Kamera (z. B. Sony FX3 über HDMI-Capture-Karte). Ton kommt vom Tablet-Mikrofon.</string>
+    <string name="camera_usb_not_supported">USB-Videogerät erkannt, aber dieses Tablet stellt es Apps noch nicht als Kamera bereit.</string>
+    <string name="camera_fx3_hint">Sony FX3: über eine HDMI-zu-USB-C-Capture-Karte (UVC) anschließen. Erscheint sie als externe Kamera, kannst du hier aufnehmen.</string>
+    <string name="camera_open_failed">Diese Kamera konnte nicht geöffnet werden. Wähle eine andere.</string>
     <string name="camera_permission_needed">Das Studio braucht Kamerazugriff.</string>
     <string name="grant">Erlauben</string>
     <string name="record">Aufnehmen</string>

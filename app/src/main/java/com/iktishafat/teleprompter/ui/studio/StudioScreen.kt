@@ -38,11 +38,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CameraFront
+import androidx.compose.material.icons.filled.CameraRear
 import androidx.compose.material.icons.filled.Cameraswitch
+import androidx.compose.material.icons.filled.Usb
+import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.filled.FlashlightOff
 import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.Mic
@@ -86,6 +91,8 @@ import com.iktishafat.teleprompter.domain.engine.PrompterState
 import com.iktishafat.teleprompter.domain.model.PrompterSettings
 import com.iktishafat.teleprompter.domain.model.VideoQualityOption
 import com.iktishafat.teleprompter.domain.remote.RemoteCommand
+import com.iktishafat.teleprompter.platform.camera.CameraSource
+import com.iktishafat.teleprompter.platform.camera.CameraSourceDetector
 import com.iktishafat.teleprompter.ui.common.ImmersiveMode
 import com.iktishafat.teleprompter.ui.common.KeepScreenOn
 import com.iktishafat.teleprompter.ui.common.rememberViewModel
@@ -166,9 +173,11 @@ private fun StudioContent(
     var preRollCountdown by remember { mutableIntStateOf(0) }
     var torch by remember { mutableStateOf(false) }
     var showSettings by remember { mutableStateOf(false) }
-    var hasFront by remember { mutableStateOf(true) }
-    var hasBack by remember { mutableStateOf(true) }
+    var sources by remember { mutableStateOf<List<CameraSource>?>(null) }
+    var selected by remember { mutableStateOf<CameraSource?>(null) }
+    var showPicker by remember { mutableStateOf(true) }
     val isRecording = recording != null
+    val front = (selected as? CameraSource.Builtin)?.front == true
 
     KeepScreenOn(true)
 
@@ -190,22 +199,31 @@ private fun StudioContent(
     val c = runtime.controller
 
     // Bind camera
-    DisposableEffect(lifecycleOwner) {
-        camera.setEnabledUseCases(CameraController.VIDEO_CAPTURE)
-        camera.bindToLifecycle(lifecycleOwner)
+    // Ask which camera to use every time the studio opens; refresh while the picker is open
+    // so a USB camera or HDMI capture card appears as soon as it is plugged in.
+    LaunchedEffect(showPicker) {
+        while (showPicker) {
+            sources = CameraSourceDetector.detect(context)
+            delay(2000)
+        }
+    }
+    val cameraChosen = selected != null
+    DisposableEffect(lifecycleOwner, cameraChosen) {
+        if (cameraChosen) {
+            camera.setEnabledUseCases(CameraController.VIDEO_CAPTURE)
+            camera.bindToLifecycle(lifecycleOwner)
+        }
         onDispose { camera.unbind() }
     }
-    LaunchedEffect(Unit) {
-        camera.initializationFuture.addListener({
-            hasFront = runCatching { camera.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) }.getOrDefault(false)
-            hasBack = runCatching { camera.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) }.getOrDefault(false)
-        }, ContextCompat.getMainExecutor(context))
-    }
-    LaunchedEffect(settings.useFrontCamera, hasFront, hasBack, isRecording) {
-        if (isRecording) return@LaunchedEffect
-        val front = (settings.useFrontCamera && hasFront) || !hasBack
-        camera.cameraSelector = if (front) CameraSelector.DEFAULT_FRONT_CAMERA else CameraSelector.DEFAULT_BACK_CAMERA
-        if (front) torch = false
+    LaunchedEffect(selected) {
+        val src = selected ?: return@LaunchedEffect
+        CameraSourceDetector.selectorFor(src)?.let { sel ->
+            runCatching { camera.cameraSelector = sel }.onFailure {
+                Toast.makeText(context, context.getString(R.string.camera_open_failed), Toast.LENGTH_LONG).show()
+                selected = null; showPicker = true
+            }
+        }
+        if (src !is CameraSource.Builtin || src.front) torch = false
     }
     LaunchedEffect(settings.videoQuality, isRecording) {
         if (isRecording) return@LaunchedEffect
@@ -277,13 +295,13 @@ private fun StudioContent(
         }
         SideControls(
             isRecording = isRecording,
-            canSwitch = hasFront && hasBack,
-            front = (settings.useFrontCamera && hasFront) || !hasBack,
+            canSwitch = true,
+            front = front || selected !is CameraSource.Builtin,
             torch = torch,
             playing = c.state == PrompterState.PLAYING,
             voice = settings.voiceTracking,
             onBack = { if (!isRecording) onExit() },
-            onSwitch = { vm.update { it.copy(useFrontCamera = !it.useFrontCamera) } },
+            onSwitch = { showPicker = true },
             onTorch = { torch = !torch },
             onRecord = { toggleRecord() },
             onPlayPause = { c.togglePlayPause() },
@@ -295,6 +313,74 @@ private fun StudioContent(
 
     if (showSettings) {
         StudioSettingsSheet(settings, isRecording, onChange = vm::update, onDismiss = { showSettings = false })
+    }
+    if (showPicker && !isRecording) {
+        CameraPicker(
+            sources = sources,
+            current = selected,
+            preferFront = settings.useFrontCamera,
+            onPick = { src ->
+                if (src is CameraSource.Builtin) vm.update { it.copy(useFrontCamera = src.front) }
+                selected = src
+                showPicker = false
+            },
+            onDismiss = { if (selected == null) onExit() else showPicker = false },
+        )
+    }
+}
+
+@Composable
+private fun CameraPicker(
+    sources: List<CameraSource>?,
+    current: CameraSource?,
+    preferFront: Boolean,
+    onPick: (CameraSource) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Surface(color = StudioColors.Surface, shape = RoundedCornerShape(20.dp), modifier = Modifier.widthIn(max = 560.dp)) {
+            Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(stringResource(R.string.choose_camera), style = MaterialTheme.typography.titleLarge, color = Color.White)
+                when {
+                    sources == null -> Text(stringResource(R.string.camera_searching), color = StudioColors.TextMuted)
+                    sources.isEmpty() -> Text(stringResource(R.string.camera_none_found), color = StudioColors.TextMuted)
+                    else -> sources.forEach { src ->
+                        val usable = src !is CameraSource.UsbVideoOnly
+                        val highlighted = src == current || (current == null && src is CameraSource.Builtin && src.front == preferFront)
+                        val (title, subtitle) = when (src) {
+                            is CameraSource.Builtin -> stringResource(if (src.front) R.string.camera_front else R.string.camera_back) to stringResource(R.string.camera_builtin_desc)
+                            is CameraSource.External -> (src.label ?: stringResource(R.string.camera_external)) to stringResource(R.string.camera_external_desc)
+                            is CameraSource.UsbVideoOnly -> src.label to stringResource(R.string.camera_usb_not_supported)
+                        }
+                        Surface(
+                            color = if (highlighted) StudioColors.SurfaceHighest else StudioColors.SurfaceHigh,
+                            shape = RoundedCornerShape(14.dp),
+                            modifier = Modifier.fillMaxWidth()
+                                .border(if (highlighted) 1.dp else 0.dp, if (highlighted) StudioColors.Gold else Color.Transparent, RoundedCornerShape(14.dp))
+                                .clickable(enabled = usable) { onPick(src) },
+                        ) {
+                            Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    when (src) {
+                                        is CameraSource.Builtin -> if (src.front) Icons.Default.CameraFront else Icons.Default.CameraRear
+                                        is CameraSource.External -> Icons.Default.Videocam
+                                        is CameraSource.UsbVideoOnly -> Icons.Default.Usb
+                                    },
+                                    null,
+                                    tint = if (usable) StudioColors.Gold else StudioColors.TextMuted,
+                                )
+                                Spacer(Modifier.width(14.dp))
+                                Column(Modifier.weight(1f)) {
+                                    Text(title, color = if (usable) Color.White else StudioColors.TextMuted, style = MaterialTheme.typography.titleMedium)
+                                    Text(subtitle, color = StudioColors.TextMuted, style = MaterialTheme.typography.bodySmall)
+                                }
+                            }
+                        }
+                    }
+                }
+                Text(stringResource(R.string.camera_fx3_hint), color = StudioColors.TextMuted, style = MaterialTheme.typography.bodySmall)
+            }
+        }
     }
 }
 

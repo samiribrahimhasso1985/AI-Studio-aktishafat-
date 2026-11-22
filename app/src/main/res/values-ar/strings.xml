@@ -85,6 +85,17 @@
     <string name="voice_start_speaking">ابدأ الكلام — سيتبعك الملقّن</string>
     <string name="voice_paused">متوقف — بانتظار صوتك</string>
     <string name="voice_listening">أتابع صوتك · %1$d كلمة/دقيقة</string>
+    <string name="choose_camera">اختر الكاميرا</string>
+    <string name="camera_searching">جارٍ البحث عن الكاميرات…</string>
+    <string name="camera_none_found">لم يُعثر على كاميرا. وصّل كاميرا أو بطاقة التقاط، وستظهر هنا تلقائياً.</string>
+    <string name="camera_front">الكاميرا الأمامية للجهاز اللوحي</string>
+    <string name="camera_back">الكاميرا الخلفية للجهاز اللوحي</string>
+    <string name="camera_builtin_desc">كاميرا مدمجة</string>
+    <string name="camera_external">كاميرا USB خارجية</string>
+    <string name="camera_external_desc">كاميرا خارجية (مثل Sony FX3 عبر بطاقة التقاط HDMI). يُسجَّل الصوت من ميكروفون الجهاز اللوحي.</string>
+    <string name="camera_usb_not_supported">تم اكتشاف جهاز فيديو USB، لكن هذا الجهاز اللوحي لا يتيحه للتطبيقات ككاميرا بعد.</string>
+    <string name="camera_fx3_hint">Sony FX3: وصّلها ببطاقة التقاط HDMI إلى USB-C ‏(UVC). إذا ظهرت ككاميرا خارجية يمكنك التسجيل منها هنا.</string>
+    <string name="camera_open_failed">تعذّر فتح هذه الكاميرا. اختر كاميرا أخرى.</string>
     <string name="camera_permission_needed">يحتاج الاستوديو إلى إذن الكاميرا.</string>
     <string name="grant">سماح</string>
     <string name="record">تسجيل</string>
