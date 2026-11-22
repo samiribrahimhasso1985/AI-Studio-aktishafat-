@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import com.iktishafat.teleprompter.domain.engine.PrompterState
 import com.iktishafat.teleprompter.domain.model.PrompterSettings
 import com.iktishafat.teleprompter.domain.text.Paragraph
 import com.iktishafat.teleprompter.ui.theme.StudioColors
@@ -72,7 +73,11 @@ fun PrompterSurface(
     val rtl = controller.language.isRtl
     controller.readingLineFraction = settings.readingLineFraction
 
-    LaunchedEffect(controller) {
+    // Request frames only while something moves (countdown or scrolling) to save battery;
+    // the loop restarts automatically when play is pressed or the speaker starts talking.
+    val animating = controller.state == PrompterState.PLAYING || controller.state == PrompterState.COUNTDOWN
+    LaunchedEffect(controller, animating) {
+        if (!animating) return@LaunchedEffect
         var last = 0L
         while (isActive) {
             withFrameNanos { now ->

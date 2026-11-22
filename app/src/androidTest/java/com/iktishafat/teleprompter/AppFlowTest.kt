@@ -22,11 +22,17 @@ class AppFlowTest {
         rule.onNodeWithTag("body_field").performTextInput(
             "في قلب بلاد الرافدين، قامت مدينة غيّرت وجه التاريخ.\n\nبابل لم تكن مجرد عاصمة، بل كانت فكرة."
         )
+        // The prompter animates every frame while scrolling, so drive the clock manually.
+        rule.mainClock.autoAdvance = false
         rule.onNodeWithTag("start_prompter").performClick()
-        rule.waitUntil(5_000) { rule.onAllNodesWithTagExists("prompter_surface") }
+        repeat(90) { rule.mainClock.advanceTimeByFrame() }
         rule.onNodeWithTag("prompter_surface").assertIsDisplayed()
         rule.onNodeWithTag("play_pause").performClick() // start (countdown)
+        repeat(30) { rule.mainClock.advanceTimeByFrame() }
         rule.onNodeWithTag("play_pause").performClick() // pause
+        repeat(10) { rule.mainClock.advanceTimeByFrame() }
+        rule.mainClock.autoAdvance = true
+        rule.waitForIdle() // paused prompter must be idle (no frame loop while paused)
     }
 }
 

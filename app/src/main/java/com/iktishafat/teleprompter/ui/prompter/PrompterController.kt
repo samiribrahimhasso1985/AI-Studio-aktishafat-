@@ -136,6 +136,7 @@ class PrompterController(
             engine.countdownSeconds = 0
             engine.resume()
         }
+        sync() // publish the state change so the frame loop starts
     }
 
     /**
@@ -151,6 +152,7 @@ class PrompterController(
         spokenUntil = tokens[idx].end
         currentWordStart = tokens[idx].start
         if (engine.state != PrompterState.PLAYING) { engine.countdownSeconds = 0; engine.resume() }
+        sync()
     }
 
     /** Re-anchors voice tracking to the line under the reading line (after manual moves). */
