@@ -72,9 +72,9 @@ fun rememberPrompterRuntime(
 
     // Settings → controller
     LaunchedEffect(settings.speedDpPerSecond, density) {
-        if (!(c.voiceMode && c.voiceActive)) c.setSpeed(settings.speedDpPerSecond * density)
+        if (!(c.voiceMode && c.voiceActive)) c.applySpeed(settings.speedDpPerSecond * density)
     }
-    LaunchedEffect(settings.countdownSeconds) { c.setCountdown(settings.countdownSeconds) }
+    LaunchedEffect(settings.countdownSeconds) { c.applyCountdown(settings.countdownSeconds) }
 
     // Microphone permission for voice tracking
     val micLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->

@@ -241,9 +241,9 @@ class PrompterController(
         onSpeedChanged(engine.speedPxPerSecond)
     }
 
-    fun setSpeed(pxPerSecond: Float) { engine.setSpeed(pxPerSecond); sync() }
+    fun applySpeed(pxPerSecond: Float) { engine.setSpeed(pxPerSecond); sync() }
 
-    fun setCountdown(seconds: Int) { engine.countdownSeconds = seconds }
+    fun applyCountdown(seconds: Int) { engine.countdownSeconds = seconds }
 
     fun jump(byFraction: Float, nowMs: Long) {
         engine.nudge(viewportHeight * byFraction)
