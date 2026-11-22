@@ -33,6 +33,7 @@ class TeleprompterApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        com.serenegiant.utils.UVCUtils.init(this) // required by the USB camera driver
         container = AppContainer(this)
     }
 }

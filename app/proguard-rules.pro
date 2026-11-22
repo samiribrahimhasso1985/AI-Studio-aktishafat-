@@ -7,3 +7,9 @@
 -dontwarn org.bouncycastle.**
 # Room entities
 -keep class com.iktishafat.teleprompter.data.db.** { *; }
+# UVCAndroid (USB cameras) – JNI callbacks
+-keep class com.herohan.uvcapp.** { *; }
+-keep class com.serenegiant.usb.** { *; }
+-keepclassmembers class * implements com.serenegiant.usb.IButtonCallback {*;}
+-keepclassmembers class * implements com.serenegiant.usb.IFrameCallback {*;}
+-keepclassmembers class * implements com.serenegiant.usb.IStatusCallback {*;}

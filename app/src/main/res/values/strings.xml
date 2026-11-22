@@ -93,8 +93,13 @@
     <string name="camera_builtin_desc">Built-in camera</string>
     <string name="camera_external">External USB camera</string>
     <string name="camera_external_desc">External camera (e.g. Sony FX3 through an HDMI capture card). Sound is recorded from the tablet microphone.</string>
-    <string name="camera_usb_not_supported">USB video device detected, but this tablet does not offer it to apps as a camera yet.</string>
-    <string name="camera_fx3_hint">Sony FX3: connect it with an HDMI to USB-C capture card (UVC). If it appears as an external camera you can record from it here.</string>
+    <string name="camera_usb_direct">USB camera or HDMI capture card, opened with the app\'s own USB driver. Android asks for permission once.</string>
+    <string name="uvc_opening">Opening the USB camera…</string>
+    <string name="uvc_permission">Allow access to the USB device in the Android dialog.</string>
+    <string name="uvc_permission_denied">USB access was not allowed. Choose the camera again to retry.</string>
+    <string name="uvc_disconnected">The USB camera is disconnected. Plug it in again.</string>
+    <string name="uvc_failed">The USB camera could not start: %1$s. Unplug it, plug it in again and retry.</string>
+    <string name="camera_fx3_hint">Sony FX3: connect it with an HDMI to USB-C capture card (UVC). Set the FX3 HDMI output to 1080p for the most reliable picture.</string>
     <string name="camera_open_failed">This camera could not be opened. Choose another one.</string>
     <string name="camera_permission_needed">The studio needs camera access.</string>
     <string name="grant">Allow</string>

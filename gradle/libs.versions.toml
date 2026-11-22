@@ -13,6 +13,7 @@ datastore = "1.1.1"
 camerax = "1.4.1"
 coroutines = "1.9.0"
 pdfbox = "2.0.27.0"
+uvcandroid = "1.0.13"
 junit = "4.13.2"
 androidxJunit = "1.2.1"
 androidxTestRunner = "1.6.2"
@@ -50,6 +51,7 @@ androidx-camera-view = { group = "androidx.camera", name = "camera-view", versio
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 pdfbox-android = { group = "com.tom-roush", name = "pdfbox-android", version.ref = "pdfbox" }
+uvcandroid = { group = "com.herohan", name = "UVCAndroid", version.ref = "uvcandroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }

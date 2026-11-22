@@ -39,6 +39,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -93,6 +95,8 @@ import com.iktishafat.teleprompter.domain.model.VideoQualityOption
 import com.iktishafat.teleprompter.domain.remote.RemoteCommand
 import com.iktishafat.teleprompter.platform.camera.CameraSource
 import com.iktishafat.teleprompter.platform.camera.CameraSourceDetector
+import com.iktishafat.teleprompter.platform.camera.UvcCamera
+import com.iktishafat.teleprompter.platform.camera.UvcState
 import com.iktishafat.teleprompter.ui.common.ImmersiveMode
 import com.iktishafat.teleprompter.ui.common.KeepScreenOn
 import com.iktishafat.teleprompter.ui.common.rememberViewModel
@@ -176,8 +180,13 @@ private fun StudioContent(
     var sources by remember { mutableStateOf<List<CameraSource>?>(null) }
     var selected by remember { mutableStateOf<CameraSource?>(null) }
     var showPicker by remember { mutableStateOf(true) }
-    val isRecording = recording != null
+    var uvcRecording by remember { mutableStateOf(false) }
+    val isRecording = recording != null || uvcRecording
     val front = (selected as? CameraSource.Builtin)?.front == true
+    val useUvc = selected is CameraSource.UsbVideoOnly
+    val uvc = remember { UvcCamera(context.applicationContext) }
+    val uvcState by uvc.state.collectAsStateWithLifecycle()
+    DisposableEffect(uvc) { onDispose { uvc.release() } }
 
     KeepScreenOn(true)
 
@@ -207,7 +216,7 @@ private fun StudioContent(
             delay(2000)
         }
     }
-    val cameraChosen = selected != null
+    val cameraChosen = selected != null && !useUvc
     DisposableEffect(lifecycleOwner, cameraChosen) {
         if (cameraChosen) {
             camera.setEnabledUseCases(CameraController.VIDEO_CAPTURE)
@@ -217,6 +226,14 @@ private fun StudioContent(
     }
     LaunchedEffect(selected) {
         val src = selected ?: return@LaunchedEffect
+        if (src is CameraSource.UsbVideoOnly) {
+            // Direct USB driver: Android shows its USB permission dialog the first time.
+            val height = when (settings.videoQuality) { VideoQualityOption.HD -> 720; VideoQualityOption.FHD -> 1080; VideoQualityOption.UHD -> 2160 }
+            uvc.open(src.deviceName, height)
+            torch = false
+            return@LaunchedEffect
+        }
+        uvc.close()
         CameraSourceDetector.selectorFor(src)?.let { sel ->
             runCatching { camera.cameraSelector = sel }.onFailure {
                 Toast.makeText(context, context.getString(R.string.camera_open_failed), Toast.LENGTH_LONG).show()
@@ -242,6 +259,23 @@ private fun StudioContent(
         val output = MediaStoreOutputOptions.Builder(context.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
             .setContentValues(values).build()
         val withAudio = settings.recordAudio && micGranted
+        if (useUvc) {
+            uvc.startRecording(
+                collection = MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                values = values,
+                withAudio = withAudio,
+                onStart = { uvcRecording = true; recordingStartedAt = System.currentTimeMillis(); elapsed = 0; c.startWithoutCountdown() },
+                onSaved = {
+                    uvcRecording = false; c.stop()
+                    Toast.makeText(context, context.getString(R.string.recording_saved), Toast.LENGTH_LONG).show()
+                },
+                onError = { msg ->
+                    uvcRecording = false; c.stop()
+                    Toast.makeText(context, context.getString(R.string.recording_failed, msg), Toast.LENGTH_LONG).show()
+                },
+            )
+            return
+        }
         recording = camera.startRecording(output, AudioConfig.create(withAudio), ContextCompat.getMainExecutor(context)) { event ->
             when (event) {
                 is VideoRecordEvent.Start -> { recordingStartedAt = System.currentTimeMillis(); c.startWithoutCountdown() }
@@ -260,7 +294,8 @@ private fun StudioContent(
 
     val toggleRecord: () -> Unit = {
         val r = recording
-        if (r != null) r.stop()
+        if (uvcRecording) uvc.stopRecording()
+        else if (r != null) r.stop()
         else if (preRollCountdown == 0) preRollCountdown = settings.countdownSeconds.coerceAtLeast(0).let { if (it == 0) -1 else it }
     }
     // Pre-roll countdown, then start recording and prompting together.
@@ -271,13 +306,21 @@ private fun StudioContent(
         }
     }
     DisposableEffect(Unit) { onDispose { recording?.stop() } }
+    // Recording timer for the USB driver (CameraX reports its own duration).
+    LaunchedEffect(uvcRecording) {
+        while (uvcRecording) { elapsed = System.currentTimeMillis() - recordingStartedAt; delay(500) }
+    }
 
     Row(Modifier.fillMaxSize().background(Color.Black)) {
         Box(Modifier.weight(1f).fillMaxHeight()) {
-            AndroidView(
-                factory = { ctx -> PreviewView(ctx).apply { controller = camera; scaleType = PreviewView.ScaleType.FILL_CENTER } },
-                modifier = Modifier.fillMaxSize(),
-            )
+            if (useUvc) {
+                UvcPreview(uvc, uvcState, Modifier.fillMaxSize())
+            } else {
+                AndroidView(
+                    factory = { ctx -> PreviewView(ctx).apply { controller = camera; scaleType = PreviewView.ScaleType.FILL_CENTER } },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
             // Prompter overlay at the top edge, next to the front camera on Galaxy Tab S7 Ultra (landscape).
             PrompterSurface(
                 controller = c,
@@ -345,12 +388,12 @@ private fun CameraPicker(
                     sources == null -> Text(stringResource(R.string.camera_searching), color = StudioColors.TextMuted)
                     sources.isEmpty() -> Text(stringResource(R.string.camera_none_found), color = StudioColors.TextMuted)
                     else -> sources.forEach { src ->
-                        val usable = src !is CameraSource.UsbVideoOnly
+                        val usable = true
                         val highlighted = src == current || (current == null && src is CameraSource.Builtin && src.front == preferFront)
                         val (title, subtitle) = when (src) {
                             is CameraSource.Builtin -> stringResource(if (src.front) R.string.camera_front else R.string.camera_back) to stringResource(R.string.camera_builtin_desc)
                             is CameraSource.External -> (src.label ?: stringResource(R.string.camera_external)) to stringResource(R.string.camera_external_desc)
-                            is CameraSource.UsbVideoOnly -> src.label to stringResource(R.string.camera_usb_not_supported)
+                            is CameraSource.UsbVideoOnly -> src.label to stringResource(R.string.camera_usb_direct)
                         }
                         Surface(
                             color = if (highlighted) StudioColors.SurfaceHighest else StudioColors.SurfaceHigh,
@@ -462,6 +505,44 @@ private fun StudioSettingsSheet(
                 onClick = { onChange { it.copy(recordAudio = !it.recordAudio) } },
                 label = { Text(stringResource(R.string.record_audio)) },
             )
+        }
+    }
+}
+
+/** Live picture from the direct USB driver, letterboxed to the camera's aspect ratio. */
+@Composable
+private fun UvcPreview(uvc: UvcCamera, state: UvcState, modifier: Modifier) {
+    Box(modifier.background(Color.Black), contentAlignment = Alignment.Center) {
+        val ratio = (state as? UvcState.Previewing)?.let { if (it.height > 0) it.width.toFloat() / it.height else null } ?: (16f / 9f)
+        AndroidView(
+            factory = { ctx ->
+                android.view.SurfaceView(ctx).apply {
+                    holder.addCallback(object : android.view.SurfaceHolder.Callback {
+                        override fun surfaceCreated(h: android.view.SurfaceHolder) = uvc.attachSurface(h.surface)
+                        override fun surfaceChanged(h: android.view.SurfaceHolder, f: Int, w: Int, ht: Int) = Unit
+                        override fun surfaceDestroyed(h: android.view.SurfaceHolder) = uvc.detachSurface(h.surface)
+                    })
+                }
+            },
+            modifier = Modifier.fillMaxSize().wrapContentSize().aspectRatio(ratio),
+        )
+        val message = when (state) {
+            UvcState.Idle, UvcState.Opening -> stringResource(R.string.uvc_opening)
+            UvcState.WaitingForPermission -> stringResource(R.string.uvc_permission)
+            UvcState.PermissionDenied -> stringResource(R.string.uvc_permission_denied)
+            UvcState.Disconnected -> stringResource(R.string.uvc_disconnected)
+            is UvcState.Failed -> stringResource(R.string.uvc_failed, state.message)
+            is UvcState.Previewing -> null
+        }
+        if (message != null) {
+            Surface(color = Color.Black.copy(alpha = 0.7f), shape = RoundedCornerShape(12.dp)) {
+                Text(message, color = Color.White, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(20.dp))
+            }
+        }
+        if (state is UvcState.Previewing && state.width > 0) {
+            Surface(color = Color.Black.copy(alpha = 0.55f), shape = RoundedCornerShape(8.dp), modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)) {
+                Text("USB ${state.width}×${state.height} · ${state.fps} fps", color = Color.White, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp))
+            }
         }
     }
 }

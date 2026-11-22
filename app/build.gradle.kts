@@ -109,6 +109,8 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.pdfbox.android)
+    // Direct USB Video Class driver (HDMI capture cards, USB cameras) for devices without external-camera support
+    implementation(libs.uvcandroid)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

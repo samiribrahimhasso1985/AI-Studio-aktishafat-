@@ -93,8 +93,13 @@
     <string name="camera_builtin_desc">كاميرا مدمجة</string>
     <string name="camera_external">كاميرا USB خارجية</string>
     <string name="camera_external_desc">كاميرا خارجية (مثل Sony FX3 عبر بطاقة التقاط HDMI). يُسجَّل الصوت من ميكروفون الجهاز اللوحي.</string>
-    <string name="camera_usb_not_supported">تم اكتشاف جهاز فيديو USB، لكن هذا الجهاز اللوحي لا يتيحه للتطبيقات ككاميرا بعد.</string>
-    <string name="camera_fx3_hint">Sony FX3: وصّلها ببطاقة التقاط HDMI إلى USB-C ‏(UVC). إذا ظهرت ككاميرا خارجية يمكنك التسجيل منها هنا.</string>
+    <string name="camera_usb_direct">كاميرا USB أو بطاقة التقاط HDMI، تُفتح بمشغّل USB الخاص بالتطبيق. يطلب Android الإذن مرة واحدة.</string>
+    <string name="uvc_opening">جارٍ فتح كاميرا USB…</string>
+    <string name="uvc_permission">اسمح بالوصول إلى جهاز USB في نافذة Android.</string>
+    <string name="uvc_permission_denied">لم يُسمح بالوصول إلى USB. اختر الكاميرا مرة أخرى للمحاولة من جديد.</string>
+    <string name="uvc_disconnected">كاميرا USB غير موصولة. وصّلها مرة أخرى.</string>
+    <string name="uvc_failed">تعذّر تشغيل كاميرا USB: %1$s. افصلها ثم وصّلها من جديد وحاول مرة أخرى.</string>
+    <string name="camera_fx3_hint">Sony FX3: وصّلها ببطاقة التقاط HDMI إلى USB-C ‏(UVC). اضبط مخرج HDMI في FX3 على 1080p لأكثر صورة ثباتاً.</string>
     <string name="camera_open_failed">تعذّر فتح هذه الكاميرا. اختر كاميرا أخرى.</string>
     <string name="camera_permission_needed">يحتاج الاستوديو إلى إذن الكاميرا.</string>
     <string name="grant">سماح</string>
