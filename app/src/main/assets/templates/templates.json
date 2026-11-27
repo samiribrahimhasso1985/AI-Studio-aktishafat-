@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "templates": [
+    {
+      "id": "kursi_studio",
+      "name_ar": "استوديو الكرسي",
+      "name_en": "Iktishafat Kursi Studio",
+      "version": "1.0",
+      "kind": "DaVinci Resolve 21 · Fusion effect (Edit page)",
+      "description_ar": "إطار هاتف على خلفية رمادية مع شريط مراحل المونتاج Raw ← CC ← Text ← Animation ← SFX. مأخوذ من تحليل الفيديو المرجعي 521882.mp4.",
+      "description_en": "Phone frame on grey with the editing-stages strip Raw → CC → Text → Animation → SFX. Built from the analysis of reference video 521882.mp4.",
+      "format": "1080×1920 · 30 fps · 652 frames (5 × 130)",
+      "davinci_path": "Effekte › Effekte › Iktishafat › Iktishafat Kursi Studio",
+      "thumbnail": "templates/kursi_studio/thumbnail.png",
+      "preview": "templates/kursi_studio/preview.png",
+      "package": "templates/kursi_studio/package.zip",
+      "package_file_name": "Iktishafat_Kursi_Studio_v1.0.zip",
+      "tested_in_davinci": false
+    }
+  ]
+}

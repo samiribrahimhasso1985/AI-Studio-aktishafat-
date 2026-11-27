@@ -1,0 +1,7 @@
+file,source,track,timeline_frames (SFX pass starts 522),sync_to
+SFX_Riser_RedLine.wav,synthesized in this session (numpy) - no third-party rights,A3,531,red line grows (local 9)
+SFX_Pop_Hera.wav,synthesized,A3,541,Hera pop (local 19)
+SFX_Blip_Pixel.wav,synthesized,A3,544 547 550 553 556,pixel squares (local 22-37)
+SFX_Tile_Drop.wav,synthesized,A3,559 561 563,C / E / O tiles (local 37-41)
+SFX_Whoosh_ToRed.wav,synthesized,A3,580 (peak at 589),cut to red (local 67)
+SFX_Snap_Brackets.wav,synthesized,A3,608,brackets settle (local 88)

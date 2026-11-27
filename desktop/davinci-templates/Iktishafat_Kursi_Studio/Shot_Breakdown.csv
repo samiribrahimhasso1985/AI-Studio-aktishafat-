@@ -1,0 +1,31 @@
+id,layer,start_frame,end_frame,start_s,end_s,element,observed,inferred_technique,confidence
+O1,Outer frame,0,651,0.000,21.700,Grey canvas #D7D7D7 + rounded phone mockup (approx 372x664 px at x166 y190) with soft drop shadow,confirmed,Background solid + rounded-rect mask + shadow on the inner clip,high
+O2,Outer strip,0,7,0.000,0.233,Stage strip slides in / playhead area empty,confirmed,Strip enters before first block reaches playhead,medium
+O3,Outer strip,8,139,0.267,4.633,Block "Raw" under playhead (darkest grey ~#1A1A1A),confirmed,Strip of 5 blocks scrolling left ~64 px/s; each block 278 px = 130 frames,high
+O4,Outer strip,140,268,4.667,8.933,Block "CC",confirmed,same,high
+O5,Outer strip,269,399,8.967,13.300,Block "Text",confirmed,same,high
+O6,Outer strip,400,530,13.333,17.667,Block "Animation",confirmed,same,high
+O7,Outer strip,531,651,17.700,21.700,Block "SFX",confirmed,same,high
+O8,Outer strip,0,651,0.000,21.700,Fixed playhead (black tag + white vertical line at x≈344),confirmed,Static graphic,high
+I1,Inner clip,0,129,0.000,4.300,Wide static shot: woman on brown armchair; white studio; ungraded ("Raw" pass),confirmed,Same 130-frame talking clip played 3 times (loop match error 0.9 at offset 130),high
+I2,Inner clip,130,259,4.333,8.633,Same clip again ("CC" pass),confirmed,Grade difference is very small: measured +1..2 red in background/chair only,medium
+I3,Inner clip,260,391,8.667,13.033,Same clip again ("Text" pass) with captions,confirmed,Plain subtitle text black ~11px sans two lines centred above head,high
+T1,Caption,261,298,8.700,9.933,"My name is hera rose",confirmed (text as shown incl. lowercase),Hard cut on/off no animation,high
+T2,Caption,299,351,9.967,11.700,"I'm the CEO of personal brand launch",confirmed,Hard cut,high
+T3,Caption,352,391,11.733,13.033,"The social media marketing agency",confirmed,Hard cut,high
+A1,Inner animated,392,411,13.067,13.700,Cut to final animated version: starts punched-in ~1.5x and settles to ~1.1x,confirmed (person area 2072->1041 px),Scale keyframe 1.5->1.1 ease-out (decelerating curve),high
+A2,Inner animated,~402,456,~13.400,15.200,"My name is" small black bold sans top-left of name,confirmed (±1 frame from 10fps sheet),Text appear (cut or fast fade),medium
+A3,Inner animated,401,410,13.367,13.667,Red vertical line grows upward from below chair to the head,confirmed,Rectangle mask/line stroke animated in Y (write-on),high
+A4,Inner animated,411,456,13.700,15.233,"Hera" big red heavy sans pops in + two outline circles either side,confirmed,Scale/pop-in (overshoot) + red line morphs into word,medium
+A5,Inner animated,414,429,13.800,14.300,Red pixel squares flicker around name; "Rose" appears small top-right,confirmed,Particle/pixel squares random on/off (stepped),medium
+A6,Inner animated,429,443,14.300,14.767,Red swoosh then red rounded tiles C-E-O drop in stacked vertical at left with rotation,confirmed,Per-letter position + rotation stagger ~2 frames,medium
+A7,Inner animated,443,456,14.767,15.200,Hold; CEO tiles slight drift/settle,confirmed,,medium
+A8,Transition,452,458,15.067,15.267,Image softens/blurs out before cut,confirmed (frame difference rising),Directional blur / zoom blur ramp,medium
+R1,Red end card,459,521,15.300,17.367,Hard cut to red diagonal gradient (top-right #C5090A -> bottom-left #37090A),confirmed (sampled),Background gradient,high
+R2,Red end card,459,~465,15.300,~15.500,"Personal Brand Launch" white heavy sans 3 lines slides in from left with strong horizontal motion blur,confirmed,X position keyframe + motion blur,high
+R3,Red end card,459,~480,15.300,~16.000,Two white corner brackets fly from frame corners to frame the title,confirmed,Position keyframes ease-out,high
+R4,Red end card,514,521,17.133,17.367,White vertical line rising from bottom under title,confirmed,Line grow (Y scale) – leads into loop,medium
+L1,Loop,522,651,17.400,21.700,Exact repeat of A1..R4 (match error 0.34) during "SFX" block,confirmed,Same animated clip duplicated; sound effects added,high
+S1,Audio,0,651,0.000,21.700,Speech line repeats every 4.33 s (same loudness pattern 4x),confirmed,Original voice track duplicated per pass,high
+S2,Audio,392,651,13.067,21.700,Louder denser audio during Animation and SFX passes; peaks around 19.3-19.6 s (transition to red),confirmed,Music + whooshes/pops synced to A3 A4 A6 R1,medium
+Q1,Loudness,0,651,0.000,21.700,Integrated loudness and true peak,see Reference_Analysis.md,ebur128,high

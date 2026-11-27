@@ -113,3 +113,11 @@ also runs the instrumented tests. Until that first build has passed, every 🟡 
 - Android's speech recognizer may play a short sound when it restarts on some devices.
 - Recognition quality for Arabic depends on the installed recognizer (Google's on-device models are best).
 - The prompter overlay in the studio is drawn by the app; it is not recorded into the video.
+
+## Templates · القوالب (2026-11-27)
+| Feature | Status |
+|---|---|
+| Templates screen (library toolbar → Templates), catalog from `assets/templates/templates.json`, AR/DE/EN | 🟡 waiting for the first build |
+| «استوديو الكرسي» Iktishafat Kursi Studio v1.0 — chair thumbnail, preview, details | 🟡 |
+| "Save for PC": copies the DaVinci package to `Download/IKTISHAFAT/` (Android 10+) | 🟡 |
+| Windows package `desktop/davinci-templates/Iktishafat_Kursi_Studio/` — installs into DaVinci Effects › Iktishafat and adds a desktop shortcut with the chair icon | 🟡 file syntax checked; not yet tested inside DaVinci Resolve 21 |

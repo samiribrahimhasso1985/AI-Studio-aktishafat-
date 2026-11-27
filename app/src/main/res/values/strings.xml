@@ -146,4 +146,15 @@
     <string name="ai_privacy_note">With cloud AI on, the script text you send to the assistant is transmitted to Anthropic. Recordings are never uploaded. The key is stored encrypted on this device.</string>
     <string name="about">About</string>
     <string name="about_offline">Scripts, prompter, camera and offline assistant work without internet. Data stays on this device.</string>
+    <string name="templates_title">Templates</string>
+    <string name="template_saved">Template saved: %1$s</string>
+    <string name="template_save_failed">Could not save. Needs Android 10 or newer.</string>
+    <string name="template_kind">Type</string>
+    <string name="template_format">Format</string>
+    <string name="template_location">In DaVinci</string>
+    <string name="template_status">Status</string>
+    <string name="template_tested">Tested in DaVinci</string>
+    <string name="template_not_tested">Not tested in DaVinci yet</string>
+    <string name="template_save">Save for PC</string>
+    <string name="template_preview">Preview</string>
 </resources>

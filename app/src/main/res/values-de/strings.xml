@@ -146,4 +146,15 @@
     <string name="ai_privacy_note">Mit Cloud-KI wird der an den Assistenten gesendete Skripttext an Anthropic übertragen. Aufnahmen werden nie hochgeladen. Der Schlüssel wird verschlüsselt gespeichert.</string>
     <string name="about">Über</string>
     <string name="about_offline">Skripte, Prompter, Kamera und Offline-Assistent funktionieren ohne Internet. Daten bleiben auf dem Gerät.</string>
+    <string name="templates_title">Vorlagen</string>
+    <string name="template_saved">Vorlage gespeichert: %1$s</string>
+    <string name="template_save_failed">Speichern nicht möglich. Benötigt Android 10 oder neuer.</string>
+    <string name="template_kind">Typ</string>
+    <string name="template_format">Format</string>
+    <string name="template_location">In DaVinci</string>
+    <string name="template_status">Status</string>
+    <string name="template_tested">In DaVinci getestet</string>
+    <string name="template_not_tested">Noch nicht in DaVinci getestet</string>
+    <string name="template_save">Für PC speichern</string>
+    <string name="template_preview">Vorschau</string>
 </resources>

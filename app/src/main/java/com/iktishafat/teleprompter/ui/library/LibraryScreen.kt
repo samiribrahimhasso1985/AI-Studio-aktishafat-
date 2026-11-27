@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.MoreVert
@@ -140,6 +141,7 @@ fun LibraryScreen(
     onOpen: (Long) -> Unit,
     onPrompt: (Long) -> Unit,
     onSettings: () -> Unit,
+    onTemplates: () -> Unit = {},
 ) {
     val vm = rememberViewModel { LibraryViewModel(container.scripts, container.importer) }
     val scripts by vm.scripts.collectAsStateWithLifecycle()
@@ -188,6 +190,7 @@ fun LibraryScreen(
                     TextButton(onClick = { picker.launch(DocumentImporter.MIME_TYPES) }, modifier = Modifier.testTag("import")) {
                         Icon(Icons.Default.FileOpen, null); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.import_action))
                     }
+                    IconButton(onClick = onTemplates, modifier = Modifier.testTag("templates")) { Icon(Icons.Default.Dashboard, stringResource(R.string.templates_title)) }
                     IconButton(onClick = onSettings) { Icon(Icons.Default.Settings, stringResource(R.string.settings)) }
                 },
             )

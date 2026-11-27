@@ -21,6 +21,7 @@ import com.iktishafat.teleprompter.ui.library.LibraryScreen
 import com.iktishafat.teleprompter.ui.prompter.PrompterScreen
 import com.iktishafat.teleprompter.ui.settings.SettingsScreen
 import com.iktishafat.teleprompter.ui.studio.StudioScreen
+import com.iktishafat.teleprompter.ui.templates.TemplatesScreen
 import kotlinx.coroutines.flow.StateFlow
 
 object Routes {
@@ -29,6 +30,7 @@ object Routes {
     const val PROMPTER = "prompter/{id}"
     const val STUDIO = "studio/{id}"
     const val SETTINGS = "settings"
+    const val TEMPLATES = "templates"
     fun editor(id: Long) = "editor/$id"
     fun prompter(id: Long) = "prompter/$id"
     fun studio(id: Long) = "studio/$id"
@@ -65,6 +67,7 @@ fun AppNavHost(
                 onOpen = { nav.navigate(Routes.editor(it)) },
                 onPrompt = { nav.navigate(Routes.prompter(it)) },
                 onSettings = { nav.navigate(Routes.SETTINGS) },
+                onTemplates = { nav.navigate(Routes.TEMPLATES) },
             )
         }
         composable(Routes.EDITOR, arguments = idArg) { entry ->
@@ -90,6 +93,9 @@ fun AppNavHost(
                 scriptId = entry.arguments?.getLong("id") ?: 0L,
                 onExit = { nav.popBackStack() },
             )
+        }
+        composable(Routes.TEMPLATES) {
+            TemplatesScreen(onBack = { nav.popBackStack() })
         }
         composable(Routes.SETTINGS) {
             SettingsScreen(container = container, onBack = { nav.popBackStack() })

@@ -146,4 +146,15 @@
     <string name="ai_privacy_note">عند تفعيل الذكاء السحابي يُرسل نص السكربت الذي تطلب تحسينه إلى Anthropic. التسجيلات لا تُرفع أبداً. يُحفظ المفتاح مشفّراً على الجهاز.</string>
     <string name="about">حول التطبيق</string>
     <string name="about_offline">النصوص والملقّن والكاميرا والمساعد المحلي تعمل بدون إنترنت، والبيانات تبقى على الجهاز.</string>
+    <string name="templates_title">القوالب</string>
+    <string name="template_saved">تم حفظ القالب: %1$s</string>
+    <string name="template_save_failed">تعذّر الحفظ. يحتاج أندرويد 10 أو أحدث.</string>
+    <string name="template_kind">النوع</string>
+    <string name="template_format">الصيغة</string>
+    <string name="template_location">في DaVinci</string>
+    <string name="template_status">الحالة</string>
+    <string name="template_tested">مُختبر في DaVinci</string>
+    <string name="template_not_tested">لم يُختبر في DaVinci بعد</string>
+    <string name="template_save">حفظ للحاسوب</string>
+    <string name="template_preview">معاينة</string>
 </resources>
